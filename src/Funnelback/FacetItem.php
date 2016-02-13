@@ -48,9 +48,9 @@ class FacetItem {
    */
   public function __construct($facet_item_data) {
     $this->facetItemData = $facet_item_data;
-    $this->label = $facet_item_data['label'];
-    $this->count = $facet_item_data['count'];
-    $this->queryStringParam = $facet_item_data['queryStringParam'];
+    $this->label = $facet_item_data->label;
+    $this->count = $facet_item_data->count;
+    $this->queryStringParam = $facet_item_data->queryStringParam;
   }
 
   /**

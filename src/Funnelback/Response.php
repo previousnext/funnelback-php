@@ -6,7 +6,7 @@
  */
 
 namespace Funnelback;
-use GuzzleHttp\Message\ResponseInterface;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * The Funnelback search response.
@@ -79,20 +79,20 @@ class Response {
   /**
    * Creates a new Funnelback response.
    *
-   * @param \GuzzleHttp\Message\ResponseInterface $http_response
+   * @param Psr\Http\Message\ResponseInterface $http_response
    *   The http response.
    */
   public function __construct(ResponseInterface $http_response) {
     $this->httpResponse = $http_response;
-    $this->responseJson = $http_response->json();
-    $this->query = $this->responseJson['question']['query'];
-    $response = $this->responseJson['response'];
-    $this->returnCode = $response['returnCode'];
-    $this->totalTimeMillis = $response['performanceMetrics']['totalTimeMillis'];
-    $result_packet = $response['resultPacket'];
-    $this->resultsSummary = new ResultSummary($result_packet['resultsSummary']);
-    $this->results = $this->buildResults($result_packet['results']);
-    $this->facets = $this->buildFacets($response['facets']);
+    $this->responseJson = json_decode($http_response->getBody()->getContents());
+    $this->query = $this->responseJson->question->query;
+    $response = $this->responseJson->response;
+    $this->returnCode = $this->httpResponse->getStatusCode();
+    $this->totalTimeMillis = $response->performanceMetrics->totalTimeMillis;
+    $result_packet = $response->resultPacket;
+    $this->resultsSummary = new ResultSummary($result_packet->resultsSummary);
+    $this->results = $this->buildResults($result_packet->results);
+    $this->facets = $this->buildFacets($response->facets);
   }
 
   /**

@@ -6,10 +6,11 @@
 
 namespace Funnelback;
 
-use GuzzleHttp\Client as HttpClient;
-use GuzzleHttp\Message\Response;
-use GuzzleHttp\Stream\Stream;
-use GuzzleHttp\Subscriber\Mock;
+use Funnelback\Client as HttpClient;
+use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\Stream;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
 
 /**
  * Tests the client class.
@@ -23,26 +24,21 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
    */
   public function testSearch() {
 
-    $http_client = new HttpClient();
-
-    $response = new Response(200);
-    $response->setBody(Stream::factory(fopen(__DIR__ . '/../Fixtures/search-results.json', 'r+')));
-    $mock = new Mock([$response]);
-
-    // Add the mock subscriber to the client.
-    $http_client->getEmitter()->attach($mock);
-
+    $body = new Stream(fopen(__DIR__ . '/../Fixtures/search-results.json', 'r+'));
+    $response = new Response(200, [], $body);
+    $mock = new MockHandler([$response]);
+    $handler = HandlerStack::create($mock);
     $config = [
-      'base_url' => 'http://agencysearch.australia.gov.au',
+      'handler' => $handler,
+      'base_uri' => 'http://agencysearch.australia.gov.au',
       'collection' => 'agencies',
     ];
-
-    $client = new Client($config, $http_client);
+    $client = new HttpClient($config);
 
     $response = $client->search('test');
 
     // Check the response.
-    $this->assertEquals(0, $response->getReturnCode(), 'Return code ok');
+    $this->assertEquals(200, $response->getReturnCode(), 'Return code ok');
     $this->assertEquals('form', $response->getQuery(), 'Query matches');
     $this->assertEquals(408, $response->getTotalTimeMillis(), 'Total time millis matches');
 

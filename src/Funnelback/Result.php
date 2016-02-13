@@ -68,15 +68,15 @@ class Result {
    *   The raw result data.
    */
   public function __construct($result_data) {
-    $this->cacheUrl = $result_data['cacheUrl'];
-    $this->clickUrl = $result_data['clickTrackingUrl'];
+    $this->cacheUrl = $result_data->cacheUrl;
+    $this->clickUrl = $result_data->clickTrackingUrl;
     $date = new \DateTime('now', new \DateTimeZone("UTC"));
     // Remove milliseconds.
-    $date->setTimestamp($result_data['date'] / 1000);
+    $date->setTimestamp($result_data->date / 1000);
     $this->date = $date;
-    $this->liveUrl = $result_data['liveUrl'];
-    $this->summary = $result_data['summary'];
-    $this->title = $result_data['title'];
+    $this->liveUrl = $result_data->liveUrl;
+    $this->summary = $result_data->summary;
+    $this->title = $result_data->title;
     $this->resultData = $result_data;
   }
 

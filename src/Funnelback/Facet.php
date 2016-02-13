@@ -41,8 +41,8 @@ class Facet {
    */
   public function __construct($facet_data) {
     $this->facetData = $facet_data;
-    $this->name = $facet_data['name'];
-    $this->facetItems = $this->buildFacetItems($facet_data['categories'][0]['values']);
+    $this->name = $facet_data->name;
+    $this->facetItems = $this->buildFacetItems($facet_data->categories[0]->values);
   }
 
   /**

@@ -27,12 +27,12 @@ interface ClientInterface {
   public function getClient();
 
   /**
-   * Returns the base url.
+   * Returns the base uri.
    *
    * @return string
-   *   The base url.
+   *   The base uri.
    */
-  public function getBaseUrl();
+  public function getBaseUri();
 
   /**
    * Returns the sub-path.

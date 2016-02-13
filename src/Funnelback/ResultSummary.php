@@ -36,7 +36,7 @@ class ResultSummary {
    *   The start index.
    */
   public function getStart() {
-    return $this->summaryData['currStart'];
+    return $this->summaryData->currStart;
   }
 
   /**
@@ -46,7 +46,7 @@ class ResultSummary {
    *   The end index.
    */
   public function getEnd() {
-    return $this->summaryData['currEnd'];
+    return $this->summaryData->currEnd;
   }
 
   /**
@@ -56,7 +56,7 @@ class ResultSummary {
    *   The page size.
    */
   public function getPageSize() {
-    return $this->summaryData['numRanks'];
+    return $this->summaryData->numRanks;
   }
 
   /**
@@ -66,7 +66,7 @@ class ResultSummary {
    *   The total result count.
    */
   public function getTotal() {
-    return $this->summaryData['totalMatching'];
+    return $this->summaryData->totalMatching;
   }
 
   /**
