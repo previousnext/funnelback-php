@@ -23,11 +23,11 @@ class Client implements ClientInterface {
   protected $client;
 
   /**
-   * The base url.
+   * The base uri.
    *
    * @var string
    */
-  protected $baseUrl;
+  protected $baseUri;
 
   /**
    * The sub-path to the API.
@@ -54,6 +54,11 @@ class Client implements ClientInterface {
   protected $collection;
 
   /**
+   * Handler.
+   */
+  protected $handler;
+
+  /**
    * Creates a new Funnelback client.
    *
    * @param array $config
@@ -62,11 +67,12 @@ class Client implements ClientInterface {
    *   (optional) The http client.
    */
   public function __construct(array $config, HttpClientInterface $client = NULL) {
-    $this->baseUrl = $config['base_url'];
+    $this->baseUri = $config['base_uri'];
     $this->subPath = isset($config['sub_path']) ? $config['sub_path'] : '';
     $format = isset($config['format']) ? $config['format'] : self::JSON_FORMAT;
     $this->setFormat($format);
     $this->collection = $config['collection'];
+    $this->handler = $config['handler'];
     $this->client = $client;
   }
 
@@ -74,16 +80,14 @@ class Client implements ClientInterface {
    * {@inheritdoc}
    */
   public function getClient() {
+    $config = ['base_uri' => $this->getBaseUri() . '/s/search.' . $this->getFormat()];
+
+    if ($handler = $this->getHandler()) {
+      $config['handler'] = $handler;
+    }
+
     if (!isset($this->client)) {
-      $this->client = new HttpClient([
-        'base_url' => [
-          '{base_url}/s/search.{format}',
-          ['base_url' => $this->getBaseUrl(), 'format' => $this->getFormat()]
-        ],
-        'defaults' => [
-          'query' => ['collection' => $this->getCollection()],
-        ]
-      ]);
+      $this->client = new HttpClient($config);
     }
     return $this->client;
   }
@@ -91,8 +95,8 @@ class Client implements ClientInterface {
   /**
    * {@inheritdoc}
    */
-  public function getBaseUrl() {
-    return $this->baseUrl;
+  public function getBaseUri() {
+    return $this->baseUri;
   }
 
   /**
@@ -136,6 +140,13 @@ class Client implements ClientInterface {
   /**
    * {@inheritdoc}
    */
+  public function getHandler() {
+    return $this->handler;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function allowedFormats() {
     return [
       $this::XML_FORMAT,
@@ -148,7 +159,8 @@ class Client implements ClientInterface {
    * {@inheritdoc}
    */
   public function search($query, $params = []) {
-    $params = array_merge(['query' => $query], $params);
+    $params['query'] = $query;
+    $params['collection'] = $this->getCollection();
     $http_response = $this->getClient()->get(NULL, ['query' => $params]);
 
     return new Response($http_response);
